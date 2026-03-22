@@ -1,0 +1,46 @@
+uniform float4x4 ViewProj;
+uniform texture2d image;
+
+uniform float brightness;
+uniform float contrast;
+uniform float saturation;
+
+sampler_state textureSampler {
+	Filter   = Linear;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+
+struct VertData {
+	float4 pos : POSITION;
+	float2 uv  : TEXCOORD0;
+};
+
+VertData VSDefault(VertData v_in)
+{
+	VertData vert_out;
+	vert_out.pos = mul(float4(v_in.pos.xyz, 1.0), ViewProj);
+	vert_out.uv  = v_in.uv;
+	return vert_out;
+}
+
+float4 PSColorFilter(VertData v_in) : TARGET
+{
+	float4 color = image.Sample(textureSampler, v_in.uv);
+
+	color.rgb += brightness;
+	color.rgb = (color.rgb - 0.5) * contrast + 0.5;
+
+	float gray = dot(color.rgb, float3(0.299, 0.587, 0.114));
+	color.rgb  = lerp(float3(gray, gray, gray), color.rgb, saturation);
+
+	return color;
+}
+
+technique Draw
+{
+	pass {
+		vertex_shader = VSDefault(v_in);
+		pixel_shader  = PSColorFilter(v_in);
+	}
+}
