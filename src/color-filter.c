@@ -25,8 +25,7 @@ static const char *color_filter_name(void *unused)
 
 static void *color_filter_create(obs_data_t *settings, obs_source_t *source)
 {
-	struct color_filter_data *filter =
-		bzalloc(sizeof(struct color_filter_data));
+	struct color_filter_data *filter = bzalloc(sizeof(struct color_filter_data));
 	filter->context = source;
 
 	char *effect_path = obs_module_file("color_filter.effect");
@@ -42,12 +41,9 @@ static void *color_filter_create(obs_data_t *settings, obs_source_t *source)
 		return NULL;
 	}
 
-	filter->param_brightness = gs_effect_get_param_by_name(filter->effect,
-							       SETTING_BRIGHTNESS);
-	filter->param_contrast =
-		gs_effect_get_param_by_name(filter->effect, SETTING_CONTRAST);
-	filter->param_saturation = gs_effect_get_param_by_name(filter->effect,
-							       SETTING_SATURATION);
+	filter->param_brightness = gs_effect_get_param_by_name(filter->effect, SETTING_BRIGHTNESS);
+	filter->param_contrast = gs_effect_get_param_by_name(filter->effect, SETTING_CONTRAST);
+	filter->param_saturation = gs_effect_get_param_by_name(filter->effect, SETTING_SATURATION);
 
 	obs_source_update(source, settings);
 	return filter;
@@ -67,12 +63,9 @@ static void color_filter_destroy(void *data)
 static void color_filter_update(void *data, obs_data_t *settings)
 {
 	struct color_filter_data *filter = data;
-	filter->brightness =
-		(float)obs_data_get_double(settings, SETTING_BRIGHTNESS);
-	filter->contrast =
-		(float)obs_data_get_double(settings, SETTING_CONTRAST);
-	filter->saturation =
-		(float)obs_data_get_double(settings, SETTING_SATURATION);
+	filter->brightness = (float)obs_data_get_double(settings, SETTING_BRIGHTNESS);
+	filter->contrast = (float)obs_data_get_double(settings, SETTING_CONTRAST);
+	filter->saturation = (float)obs_data_get_double(settings, SETTING_SATURATION);
 }
 
 static void color_filter_render(void *data, gs_effect_t *effect)
@@ -80,8 +73,7 @@ static void color_filter_render(void *data, gs_effect_t *effect)
 	UNUSED_PARAMETER(effect);
 	struct color_filter_data *filter = data;
 
-	if (!obs_source_process_filter_begin(filter->context, GS_RGBA,
-					     OBS_ALLOW_DIRECT_RENDERING))
+	if (!obs_source_process_filter_begin(filter->context, GS_RGBA, OBS_ALLOW_DIRECT_RENDERING))
 		return;
 
 	gs_effect_set_float(filter->param_brightness, filter->brightness);
@@ -95,15 +87,9 @@ static obs_properties_t *color_filter_properties(void *unused)
 {
 	UNUSED_PARAMETER(unused);
 	obs_properties_t *props = obs_properties_create();
-	obs_properties_add_float_slider(props, SETTING_BRIGHTNESS,
-					obs_module_text("Brightness"), -1.0,
-					1.0, 0.01);
-	obs_properties_add_float_slider(props, SETTING_CONTRAST,
-					obs_module_text("Contrast"), 0.0, 2.0,
-					0.01);
-	obs_properties_add_float_slider(props, SETTING_SATURATION,
-					obs_module_text("Saturation"), 0.0, 2.0,
-					0.01);
+	obs_properties_add_float_slider(props, SETTING_BRIGHTNESS, obs_module_text("Brightness"), -1.0, 1.0, 0.01);
+	obs_properties_add_float_slider(props, SETTING_CONTRAST, obs_module_text("Contrast"), 0.0, 2.0, 0.01);
+	obs_properties_add_float_slider(props, SETTING_SATURATION, obs_module_text("Saturation"), 0.0, 2.0, 0.01);
 	return props;
 }
 
